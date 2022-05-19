@@ -37,7 +37,7 @@ jobs:
             target: aarch64-apple-ios-sim
             variant: release
 
-          - os: macOS-latest
+          - os: macos-12
             target: x86_64-apple-ios
             variant: debug
 
@@ -45,7 +45,7 @@ jobs:
             target: x86_64-apple-ios
             variant: release
 
-          - os: macOS-latest
+          - os: macos-12
             target: aarch64-apple-ios
             variant: debug
 
