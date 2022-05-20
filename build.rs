@@ -139,7 +139,7 @@ fn build_v8() {
     };
 
     let ios_deployment_target =
-      env::var("IOS_DEPLOYMENT_TARGET").unwrap_or("10".to_string());
+      env::var("IOS_DEPLOYMENT_TARGET").unwrap_or_else(|_| "10".to_string());
 
     gn_args.push("target_os = \"ios\"".to_string());
     gn_args.push(format!("target_cpu = \"{}\"", arch));
