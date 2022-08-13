@@ -144,7 +144,7 @@ fn build_v8() {
     gn_args.push(format!("target_cpu = \"{}\"", arch));
     gn_args.push(format!("v8_target_cpu = \"{}\"", arch));
     gn_args.push(format!("ios_deployment_target = {}", ios_deployment_target));
-    gn_args.push("enable_ios_bitcode = true".to_string());
+    gn_args.push("enable_ios_bitcode = false".to_string());
     gn_args.push("is_component_build = false".to_string());
     gn_args.push("use_custom_libcxx = false".to_string());
     gn_args.push("use_xcode_clang = true".to_string());
@@ -153,7 +153,7 @@ fn build_v8() {
     gn_args.push("v8_use_external_startup_data = false".to_string());
     gn_args.push("v8_enable_pointer_compression = false".to_string());
     gn_args.push("v8_enable_shared_ro_heap = true".to_string());
-    gn_args.push("ios_code_signing_identity = -".to_string());
+    gn_args.push("ios_code_signing_identity = \"-\"".to_string());
   }
 
   if let Some(clang_base_path) = find_compatible_system_clang() {
