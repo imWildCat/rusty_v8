@@ -153,6 +153,7 @@ fn build_v8() {
     gn_args.push("v8_use_external_startup_data = false".to_string());
     gn_args.push("v8_enable_pointer_compression = false".to_string());
     gn_args.push("v8_enable_shared_ro_heap = true".to_string());
+    gn_args.push("ios_code_signing_identity = -".to_string());
   }
 
   if let Some(clang_base_path) = find_compatible_system_clang() {
