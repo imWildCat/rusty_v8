@@ -156,6 +156,7 @@ fn build_v8() {
     // gn_args.push("ios_code_signing_identity = \"-\"".to_string());
     // gn_args.push("target_environment = ")
     gn_args.push("ios_enable_code_signing = false".to_string());
+    gn_args.push("is_component_build = fasle".to_string());
   }
 
   if let Some(clang_base_path) = find_compatible_system_clang() {
