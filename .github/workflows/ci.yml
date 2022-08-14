@@ -1,12 +1,12 @@
 name: ci
 
 on:
-  push:
-    branches: [main]
-    tags: ["**"]
+  # push:
+  #   branches: [main]
+  #   tags: ["**"]
   pull_request:
     branches: [main]
-    types: [labeled, opened, synchronize, reopened]
+    # types: [labeled, opened, synchronize, reopened]
 
 jobs:
   build:
@@ -20,9 +20,8 @@ jobs:
       # Don't fast-fail on tag build because publishing binaries shouldn't be
       # prevented if 'cargo publish' fails (which can be a false negative).
       fail-fast:
-        ${{ (github.event_name == 'pull_request' || (github.ref !=
-        'refs/heads/main' && !startsWith(github.ref, 'refs/tags/'))) &&
-        !contains(github.event.pull_request.labels.*.name, 'no-fail-fast') }}
+        ${{ github.event_name == 'pull_request' || (github.ref !=
+        'refs/heads/main' && !startsWith(github.ref, 'refs/tags/')) }}
       matrix:
         config:
           - os: macOS-latest
@@ -33,25 +32,49 @@ jobs:
             target: x86_64-apple-darwin
             variant: release
 
-          - os: ${{ github.repository == 'denoland/rusty_v8' && 'ubuntu-20.04-xl' || 'ubuntu-18.04' }}
-            target: x86_64-unknown-linux-gnu
+          - os: macOS-latest
+            target: aarch64-apple-ios-sim
             variant: debug
 
-          - os: ${{ github.repository == 'denoland/rusty_v8' && 'ubuntu-20.04-xl' || 'ubuntu-18.04' }}
-            target: x86_64-unknown-linux-gnu
+          - os: macOS-latest
+            target: aarch64-apple-ios-sim
             variant: release
 
-          - os: ${{ github.repository == 'denoland/rusty_v8' && 'windows-2019-xxl' || 'windows-2019' }}
-            target: x86_64-pc-windows-msvc
-            variant: release # Note: we do not support windows debug builds.
-
-          - os: ${{ github.repository == 'denoland/rusty_v8' && 'ubuntu-20.04-xl' || 'ubuntu-18.04' }}
-            target: aarch64-unknown-linux-gnu
+          - os: macos-12
+            target: x86_64-apple-ios
             variant: debug
 
-          - os: ${{ github.repository == 'denoland/rusty_v8' && 'ubuntu-20.04-xl' || 'ubuntu-18.04' }}
-            target: aarch64-unknown-linux-gnu
+          - os: macOS-latest
+            target: x86_64-apple-ios
             variant: release
+
+          - os: macos-12
+            target: aarch64-apple-ios
+            variant: debug
+
+          - os: macOS-latest
+            target: aarch64-apple-ios
+            variant: release
+
+          # - os: ${{ github.repository == 'denoland/rusty_v8' && 'ubuntu-20.04-xl' || 'ubuntu-18.04' }}
+          #   target: x86_64-unknown-linux-gnu
+          #   variant: debug
+
+          # - os: ${{ github.repository == 'denoland/rusty_v8' && 'ubuntu-20.04-xl' || 'ubuntu-18.04' }}
+          #   target: x86_64-unknown-linux-gnu
+          #   variant: release
+
+          # - os: ${{ github.repository == 'denoland/rusty_v8' && 'windows-2019-xxl' || 'windows-2019' }}
+          #   target: x86_64-pc-windows-msvc
+          #   variant: release # Note: we do not support windows debug builds.
+
+          # - os: ${{ github.repository == 'denoland/rusty_v8' && 'ubuntu-20.04-xl' || 'ubuntu-18.04' }}
+          #   target: aarch64-unknown-linux-gnu
+          #   variant: debug
+
+          # - os: ${{ github.repository == 'denoland/rusty_v8' && 'ubuntu-20.04-xl' || 'ubuntu-18.04' }}
+          #   target: aarch64-unknown-linux-gnu
+          #   variant: release
 
     env:
       V8_FROM_SOURCE: true
@@ -98,6 +121,21 @@ jobs:
 
           echo "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=/usr/bin/aarch64-linux-gnu-gcc-10" >> ${GITHUB_ENV}
           echo "QEMU_LD_PREFIX=/usr/aarch64-linux-gnu" >> ${GITHUB_ENV}
+
+      - name: Install cross compilation toolchain for iOS simulator (arm64)
+        if: matrix.config.target == 'aarch64-apple-ios-sim'
+        run: |
+          rustup target add aarch64-apple-ios-sim
+
+      - name: Install cross compilation toolchain for iOS simulator (x86_64)
+        if: matrix.config.target == 'x86_64-apple-ios'
+        run: |
+          rustup target add x86_64-apple-ios
+
+      - name: Install cross compilation toolchain for iOS device (arm64)
+        if: matrix.config.target == 'aarch64-apple-ios'
+        run: |
+          rustup target add aarch64-apple-ios
 
       - name: Write git_submodule_status.txt
         run: git submodule status --recursive > git_submodule_status.txt
